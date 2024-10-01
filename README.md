@@ -1,6 +1,4 @@
-Certainly! Below is the complete updated tutorial, including all necessary changes for **Ethers.js v6** and **Hardhat**. This version has been thoroughly updated to reflect the latest breaking changes and new features introduced in the latest versions of these tools.
 
----
 
 # Tutorial: How to Create and Deploy Your Own NFT Collection on Morph L2 (Ethers.js v6 and Hardhat)
 
@@ -269,6 +267,3 @@ Feel free to extend this tutorial by adding features like batch minting, integra
 
 You can find example code for this tutorial here:  [Github Replo](https://github.com/EmmanuelKusi/morph-nft/)
 
----
-
-This concludes the updated tutorial with all the necessary changes for **Ethers.js v6**. Let me know if you have any other questions or need further clarification!
