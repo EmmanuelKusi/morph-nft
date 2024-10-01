@@ -1,54 +1,59 @@
-# Tutorial: How to Create and Deploy Your Own NFT Collection on Morph L2
+Certainly! Below is the complete updated tutorial, including all necessary changes for **Ethers.js v6** and **Hardhat**. This version has been thoroughly updated to reflect the latest breaking changes and new features introduced in the latest versions of these tools.
+
+---
+
+# Tutorial: How to Create and Deploy Your Own NFT Collection on Morph L2 (Ethers.js v6 and Hardhat)
 
 **Overview:**  
-In this tutorial, we will go through the steps required to create and deploy your own NFT collection on **Morph L2**, a Layer 2 scaling solution. Deploying NFTs on a Layer 2 network like Morph L2 offers significant benefits such as lower gas fees and faster transactions.
+In this tutorial, we'll go step-by-step to create and deploy your own NFT collection on **Morph L2**, using the latest versions of **Ethers.js v6** and **Hardhat**. Deploying NFTs on Layer 2 reduces gas fees and improves transaction speeds, making it ideal for NFT projects.
 
-**Prerequisites:**
-- Basic understanding of blockchain and NFTs.
-- Familiarity with Solidity and smart contract development.
-- An installed development environment (Node.js, Hardhat, or Truffle).
-- A wallet (e.g., MetaMask) that supports Layer 2 networks.
-- Access to a Morph L2 testnet or mainnet.
+### Prerequisites:
+- Basic understanding of blockchain, NFTs, and Solidity.
+- Development environment set up with **Node.js**, **Hardhat**, and **Ethers.js v6**.
+- A wallet (e.g., MetaMask) connected to the Morph L2 network.
+- Access to Morph L2 testnet or mainnet.
+
+---
 
 ### Step 1: Set Up Your Development Environment
 
-Before we begin, ensure that you have the required dependencies installed. We'll use **Hardhat** for smart contract development and deployment.
-
-1. Install Node.js if you haven't already.
-2. Set up a new Hardhat project by running the following commands:
+1. **Install Node.js** if you haven't already [Download Node.js](https://nodejs.org/).
+2. **Create a new Hardhat project** and install the necessary dependencies.
 
 ```bash
 mkdir morph-nft
 cd morph-nft
 npm init -y
-npm install --save-dev hardhat @nomiclabs/hardhat-ethers ethers
+npm install --save-dev hardhat 
 ```
 
-3. Initialize the Hardhat project:
+3. **Initialize Hardhat**:
 
 ```bash
 npx hardhat
 ```
 
-Select "Create a basic sample project," and then follow the instructions. Once this is done, you will have the basic structure of a Hardhat project.
+Follow the prompts to create a "basic sample project". This will set up the structure of your Hardhat project.
+
+---
 
 ### Step 2: Install OpenZeppelin Contracts
 
-OpenZeppelin provides secure and reusable Solidity code for building NFT contracts. We'll install the required package to handle the ERC-721 standard (the standard for NFTs).
+We will use OpenZeppelin contracts to implement the **ERC721** NFT standard.
 
 ```bash
 npm install @openzeppelin/contracts
 ```
 
+---
+
 ### Step 3: Write the NFT Smart Contract
 
-Now that your environment is set up, it's time to create your NFT smart contract. We'll use the **ERC721** standard provided by OpenZeppelin.
-
-1. Create a new file named `MorphNFT.sol` inside the `contracts` folder.
+Create a new file named `MorphNFT.sol` inside the `contracts` folder and write your NFT smart contract.
 
 ```solidity
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
@@ -72,98 +77,108 @@ contract MorphNFT is ERC721URIStorage, Ownable {
 ```
 
 **Explanation:**
-- **ERC721**: This is the standard contract for creating NFTs.
-- **ERC721URIStorage**: This extension allows us to set a metadata URI for each NFT, linking to its image and data.
-- **Ownable**: This makes the contract ownable, allowing the owner (you) to mint new NFTs.
+- **ERC721**: Standard contract for NFTs.
+- **ERC721URIStorage**: Adds support for storing token URIs (metadata and images).
+- **Ownable**: Ensures only the contract owner can mint new NFTs.
+
+---
 
 ### Step 4: Deploy the NFT Smart Contract to Morph L2
 
-We will now deploy the smart contract on Morph L2.
-
-1. Set up your **Hardhat configuration** to connect to the Morph L2 network. Open the `hardhat.config.js` file and modify it as follows:
+1. **Configure Hardhat for the Morph L2 network**:
+   
+Modify the `hardhat.config.js` file to include your network details:
 
 ```javascript
-require("@nomiclabs/hardhat-ethers");
+require("@nomicfoundation/hardhat-toolbox");
+require('dotenv').config();
 
 module.exports = {
-  solidity: "0.8.0",
+  solidity: "0.8.20",
   networks: {
     morphL2: {
       url: "https://testnet.morphL2.network", // Replace with the actual Morph L2 RPC URL
-      accounts: ["YOUR_PRIVATE_KEY"] // Replace with your wallet private key
+      accounts: [process.env.PRIVATE_KEY]  // Store your private key in .env file for security
     }
   }
 };
 ```
 
-2. Write a deployment script. Create a file named `deploy.js` inside the `scripts` folder:
+2. **Create a deployment script**:
+   
+Create a file named `deploy.js` in the `scripts` folder.
 
 ```javascript
+const { ethers } = require("hardhat");
+
 async function main() {
   const [deployer] = await ethers.getSigners();
   console.log("Deploying contracts with the account:", deployer.address);
 
+  // Get the contract factory
   const NFTContract = await ethers.getContractFactory("MorphNFT");
+
+  // Deploy the contract
   const nft = await NFTContract.deploy();
-  
-  console.log("NFT Contract deployed to:", nft.address);
+
+  // Log the contract address
+  console.log("NFT Contract deployed to:", nft.target);  // Use .target to get the deployed address in Ethers.js v6
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
 ```
 
-3. Deploy the contract to the Morph L2 network:
+3. **Deploy the contract** to Morph L2 by running the script:
 
 ```bash
 npx hardhat run scripts/deploy.js --network morphL2
 ```
 
-Once deployed, the console will output the address where your NFT contract is deployed.
+Once deployed, you'll see the contract address printed in your console.
+
+---
 
 ### Step 5: Mint Your First NFT
 
-Now that the contract is deployed, let's mint our first NFT.
-
-1. Create a new script named `mint.js` in the `scripts` folder:
+Now that the contract is deployed, we can mint our first NFT. Create a new file named `mint.js` in the `scripts` folder.
 
 ```javascript
+const { ethers } = require("hardhat");
+
 async function main() {
   const [deployer] = await ethers.getSigners();
-  const nftAddress = "YOUR_DEPLOYED_NFT_ADDRESS";  // Replace with your contract's deployed address
-  const NFTContract = await ethers.getContractFactory("MorphNFT");
-  const nft = NFTContract.attach(nftAddress);
+  
+  const nftAddress = "YOUR_DEPLOYED_NFT_ADDRESS";  // Replace with the deployed contract address
+  const NFTContract = await ethers.getContractAt("MorphNFT", nftAddress);
 
-  const tokenURI = "https://your-nft-metadata-uri.com/metadata.json"; // Replace with the actual URI
-  let tx = await nft.createNFT(tokenURI);
+  const tokenURI = "https://your-nft-metadata-uri.com/metadata.json";  // Replace with your metadata URI
+  
+  const tx = await NFTContract.createNFT(tokenURI);
   await tx.wait();
 
   console.log("NFT minted with URI:", tokenURI);
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
 ```
 
-2. Mint the NFT by running:
+Run the minting script:
 
 ```bash
 npx hardhat run scripts/mint.js --network morphL2
 ```
 
-Once the minting is complete, you'll see the transaction details in your terminal.
+---
 
 ### Step 6: Create Metadata for Your NFTs
 
-NFT metadata provides the information about your NFT, such as its name, description, and image. The metadata is stored off-chain, typically using **IPFS** or other decentralized storage solutions. Here's an example of a metadata file:
+NFT metadata is stored off-chain, typically using **IPFS**. Here's an example of a metadata file:
 
 ```json
 {
@@ -183,13 +198,15 @@ NFT metadata provides the information about your NFT, such as its name, descript
 }
 ```
 
-Upload this JSON file to IPFS (using a service like [Pinata](https://pinata.cloud/) or [Infura](https://infura.io/)) and use the resulting IPFS URL as the `tokenURI` when minting your NFTs.
+Use services like [Pinata](https://pinata.cloud/) or [Infura](https://infura.io/) to upload your metadata to IPFS, and use the resulting URL as the `tokenURI` when minting NFTs.
+
+---
 
 ### Step 7: Build a Simple Frontend to Display Your NFTs
 
-To allow users to interact with your NFT collection, you can create a basic frontend using **React** and **Ethers.js**. Below is a simple example.
+You can create a basic frontend to allow users to interact with your NFTs. Below is a simple example using **React** and **Ethers.js v6**.
 
-1. Install dependencies:
+1. **Set up a React app**:
 
 ```bash
 npx create-react-app morph-nft-frontend
@@ -197,21 +214,23 @@ cd morph-nft-frontend
 npm install ethers
 ```
 
-2. Modify the `App.js` file:
+2. **Modify `App.js`**:
 
 ```javascript
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
-import NFTContractABI from './NFTContractABI.json';
+import NFTContractABI from './NFTContractABI.json';  // Make sure to export the ABI from Hardhat
 
-const contractAddress = "YOUR_DEPLOYED_NFT_ADDRESS"; // Replace with your contract address
+const contractAddress = "YOUR_DEPLOYED_NFT_ADDRESS";  // Replace with your contract's address
 
 function App() {
   const [nftURI, setNFTURI] = useState("");
 
   const getNFTData = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const contract = new ethers.Contract(contractAddress, NFTContractABI, provider);
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    
+    const contract = new ethers.Contract(contractAddress, NFTContractABI, signer);
 
     const tokenURI = await contract.tokenURI(0);  // Fetch the URI of token 0
     setNFTURI(tokenURI);
@@ -229,18 +248,27 @@ function App() {
 export default App;
 ```
 
-3. Add your NFT contract’s ABI (`NFTContractABI.json`) to the project.
-
-4. Run the frontend:
+3. **Run the frontend**:
 
 ```bash
 npm start
 ```
 
-Now you have a basic dApp that fetches and displays NFT data from your contract.
+This simple frontend allows users to fetch and display the metadata of the first NFT minted from your contract.
+
+---
 
 ### Conclusion
 
-Congratulations! You've successfully created and deployed your own NFT collection on Morph L2. You've also learned how to mint NFTs and build a frontend that interacts with your NFT contract. This setup can be expanded into a full-fledged NFT marketplace, a gallery, or any other NFT-based application.
+You've successfully created and deployed your own NFT collection on Morph L2 using the latest **Ethers.js v6** and **Hardhat**! You've learned how to:
+- Set up a smart contract using OpenZeppelin's ERC-721 standard.
+- Deploy it to a Layer 2 network.
+- Mint an NFT and build a frontend that interacts with your contract.
 
-Feel free to experiment by adding more features like batch minting, royalty support, or integrating with marketplaces!
+Feel free to extend this tutorial by adding features like batch minting, integrating royalty standards, or building out a full NFT marketplace!
+
+You can find example code for this tutorial here:  [Github Replo](https://github.com/EmmanuelKusi/morph-nft/)
+
+---
+
+This concludes the updated tutorial with all the necessary changes for **Ethers.js v6**. Let me know if you have any other questions or need further clarification!
