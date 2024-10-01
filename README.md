@@ -9,7 +9,7 @@ In this tutorial, we'll go step-by-step to create and deploy your own NFT collec
 - Basic understanding of blockchain, NFTs, and Solidity.
 - Development environment set up with **Node.js**, **Hardhat**, and **Ethers.js v6**.
 - A wallet (e.g., MetaMask) connected to the Morph L2 network.
-- Access to Morph L2 testnet or mainnet.
+- Access to Morph L2 testnet.
 
 ---
 
@@ -196,7 +196,7 @@ NFT metadata is stored off-chain, typically using **IPFS**. Here's an example of
 }
 ```
 
-Use services like [Pinata](https://pinata.cloud/) or [Infura](https://infura.io/) to upload your metadata to IPFS, and use the resulting URL as the `tokenURI` when minting NFTs.
+Use services like [Infura](https://www.infura.io/blog/post/ipfs-file-upload-client-toola.io/) to upload your metadata to IPFS, and use the resulting URL as the `tokenURI` when minting NFTs.
 
 ---
 
