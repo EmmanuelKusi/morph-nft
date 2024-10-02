@@ -95,7 +95,7 @@ module.exports = {
   solidity: "0.8.20",
   networks: {
     morphL2: {
-      url: "https://testnet.morphL2.network", // Replace with the actual Morph L2 RPC URL
+      url: "https://rpc-quicknode-holesky.morphl2.io",
       accounts: [process.env.PRIVATE_KEY]  // Store your private key in .env file for security
     }
   }
@@ -120,7 +120,7 @@ async function main() {
   const nft = await NFTContract.deploy();
 
   // Log the contract address
-  console.log("NFT Contract deployed to:", nft.target);  // Use .target to get the deployed address in Ethers.js v6
+  console.log("NFT Contract deployed to:", nft.target); 
 }
 
 main().catch((error) => {
